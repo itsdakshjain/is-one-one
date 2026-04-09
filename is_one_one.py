@@ -9,13 +9,25 @@ def is_one_unicode_distance():
     # Distance between 'a' and 'b' is 1
     return ord("b") - ord("a") == 1
 
-#....
+# Your chaotic function 🔥
+def is_one_using_time_travel():
+    import datetime
+    import math
+    
+    now = datetime.datetime.now()
+    useless = math.factorial(1) + math.sin(0) + len(str(now.year))
+    
+    if useless > 0:
+        return True
+    else:
+        return True
 
 def is_one_just_to_be_sure(): 
     # The ultimate recursive confirmation
     return all([
         is_one(),
         is_one_unicode_distance(),
+        is_one_using_time_travel(),  # 👈 added here also (extra chaos 😄)
     ])
 
 def main():
@@ -23,6 +35,7 @@ def main():
         is_one,
         is_one_unicode_distance,
         is_one_just_to_be_sure,
+        is_one_using_time_travel,   # 👈 IMPORTANT
     ]
   
     print("🧠 Running overengineered checks to see if 1 == 1:\n")
@@ -30,7 +43,6 @@ def main():
     for i, func in enumerate(checks, 1):
         try:
             result = func()
-            # Making the output look like a professional lab report
             status = "VERIFIED" if result else "FAILED"
             print(f"Test #{i:02} | {func.__name__.ljust(30)} | {status}")
         except Exception as e:
