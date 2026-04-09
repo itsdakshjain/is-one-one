@@ -27,7 +27,7 @@ Wanna make this dumber? You're welcome here.
 All you have to do is:
 1. **Fork** this repo.
 2. Add a new function to `is_one_one.py`. 
-3. Make sure it returns `True`(because 1 is 1).
+3. Make sure it returns `True` (because 1 is 1).
 4. **Important:** If your code is easy to understand, you're doing it wrong. We want chaos, not clean code.
 5. Bonus points for using libraries that have no business being in a math script (like `BeautifulSoup` or `Pandas`).
 6. Open a **Pull Request**.
@@ -73,7 +73,7 @@ A huge thanks to the legends who decided to waste their CPU cycles on this:
 ---
 
 ## Support the "Research"
-If this project made you facepalm or smile:
+If this project gave you brain rot:
 * **Star** this repository (It keeps me motivated).
 * **Follow** me for more overengineered nonsense.
 * **Share** it with a friend who writes "too much code."
