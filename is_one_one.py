@@ -5,17 +5,23 @@ def is_one():
     # The only normal check in this entire repo.
     return 1 == 1
 
+def is_one_unicode_distance():
+    # Distance between 'a' and 'b' is 1
+    return ord("b") - ord("a") == 1
 
+#....
 
 def is_one_just_to_be_sure(): 
     # The ultimate recursive confirmation
     return all([
         is_one(),
+        is_one_unicode_distance(),
     ])
 
 def main():
     checks = [
         is_one,
+        is_one_unicode_distance,
         is_one_just_to_be_sure,
     ]
   
