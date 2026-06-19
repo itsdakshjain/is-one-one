@@ -1,60 +1,51 @@
 name: Logic Verification CI
 
 on:
-  push: # This tells GitHub when to run the script
-    branches: [ "main" ]
-  pull_request_target: # This allows the bot to talk on forks
-    branches: [ "main" ]
+  workflow_run:
+    workflows: ["Welcome Bot"] # name of 'welcome.yml'
+    types:
+      - completed
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # We use Ubuntu (Linux) because it's the industry standard for servers
+  verify:
+    runs-on: ubuntu-latest
+    # Only run if the welcome bot succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
-      pull-requests: write # This gives the bot permission to comment
+      pull-requests: write
       contents: read
     
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        # This ensures we test the code FROM the PR, not just the main branch
-        ref: ${{ github.event.pull_request.head.sha }}
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Use the repository context from the triggering workflow
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_sha }}
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Install requirements # added for req
-      run: |
-        if [ -f requirements.txt ]; then
-          python -m pip install -r requirements.txt
-        else
-          echo "No requirements.txt found, skipping installation."
-        fi
+      - name: Install requirements
+        run: |
+          if [ -f requirements.txt ]; then
+            python -m pip install -r requirements.txt
+          fi
 
-    - name: Run Unit Tests
-      # It runs the file you merged in the last step.
-      run: python test_core.py
+      - name: Run Unit Tests
+        run: python test_core.py
 
-    - name: Post Success Comment
-      if: success() && (github.event_name == 'pull_request' || github.event_name == 'pull_request_target')
-      uses: thollander/actions-comment-pull-request@v2
-      with:
-        message: |
-          ### ✅ Logic Verified!
-          The **Automated Logic Suite** has confirmed that 1 is still 1. 
-          - **Environment:** Ubuntu-latest
-          - **Status:** Mathematical Sanity Confirmed
-          
-          You are safe to merge this chaos.
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Failure Comment
-      if: failure() && (github.event_name == 'pull_request' || github.event_name == 'pull_request_target')
-      uses: thollander/actions-comment-pull-request@v2
-      with:
-        message: "### ❌ LOGIC COLLAPSE\nThe automated suite has detected that 1 is no longer 1. Please fix the broken logic before merging."
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      
+      - name: Post Comment
+        # Since this is a workflow_run, we need to pass the PR number manually
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pull_request_number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          message: |
+            ### ✅ Logic Verified!
+            The **Automated Logic Suite** has confirmed that 1 is still 1.
+            - **Status:** Mathematical Sanity Confirmed
+            
+            You are safe to merge this chaos.
