@@ -2,14 +2,14 @@ name: Logic Verification CI
 
 on:
   workflow_run:
-    workflows: ["Welcome Bot"] # name of 'welcome.yml'
+    workflows: ["Welcome Bot"] # Must match the 'name' in welcome.yml
     types:
       - completed
 
 jobs:
   verify:
     runs-on: ubuntu-latest
-    # Only run if the welcome bot succeeded
+    # Only run if the Welcome Bot completed successfully
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       pull-requests: write
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # Use the repository context from the triggering workflow
+          # Pull the code from the PR that triggered the Welcome Bot
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_sha }}
 
@@ -32,20 +32,31 @@ jobs:
         run: |
           if [ -f requirements.txt ]; then
             python -m pip install -r requirements.txt
+          else
+            echo "No requirements.txt found, skipping installation."
           fi
 
       - name: Run Unit Tests
         run: python test_core.py
 
-      - name: Post Comment
-        # Since this is a workflow_run, we need to pass the PR number manually
+      - name: Post Success Comment
+        if: success()
         uses: thollander/actions-comment-pull-request@v2
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           pull_request_number: ${{ github.event.workflow_run.pull_requests[0].number }}
           message: |
             ### ✅ Logic Verified!
-            The **Automated Logic Suite** has confirmed that 1 is still 1.
+            The **Automated Logic Suite** has confirmed that 1 is still 1. 
+            - **Environment:** Ubuntu-latest
             - **Status:** Mathematical Sanity Confirmed
             
             You are safe to merge this chaos.
+    
+      - name: Failure Comment
+        if: failure()
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pull_request_number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          message: "### ❌ LOGIC COLLAPSE\nThe automated suite has detected that 1 is no longer 1. Please fix the broken logic before merging."
