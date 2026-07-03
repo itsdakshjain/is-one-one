@@ -134,6 +134,25 @@ def is_one_using_existential_crisis():
  
     return unum == conceptual_one == 1
 
+
+ #) use any angles to prove(math.pi/6, math.pi/4, math.pi/3, math.pi/2) that result value is one
+
+import math
+import numpy as np
+
+def MeNoddie(x : int) -> int:
+    # assume x = theta
+    numerator = math.sin(x)**2 + math.cos(x)**2
+    
+    denominator = (1 / math.cos(x))**2 - (math.sin(x) / math.cos(x))**2
+
+    result = int(numerator/denominator)
+    return  result == 1 
+
+def code_is_not_coding():
+    """wrapper so the main runner can execute the MeNoddie check like a normal test. so that no error pop up at my screen"""
+    return MeNoddie(0)
+
 def is_one_just_to_be_sure():
     """Verifies one by aggregating every proof."""
     return all([
@@ -146,7 +165,8 @@ def is_one_just_to_be_sure():
         is_one_under_extreme_pressure(),
         the_one_suriya(),
         is_one_using_vector_magnitude(),
-        is_one_using_existential_crisis(),
+        is_one_using_existential_crisis(), 
+        MeNoddie(0) 
     ])
 
 def main():
@@ -164,6 +184,8 @@ def main():
         the_one_suriya,
         is_one_using_vector_magnitude,
         is_one_using_existential_crisis,
+        code_is_not_coding
+        
     ]
   
     print("🧠 Running overengineered checks to see if 1 == 1:\n")
